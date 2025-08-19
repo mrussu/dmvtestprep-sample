@@ -1,0 +1,11 @@
+selectAll:
+SELECT * FROM saved_questions;
+
+selectByQuestionId:
+SELECT 1 FROM saved_questions WHERE question_id = :questionId;
+
+insertQuestionId:
+INSERT OR IGNORE INTO saved_questions (question_id) VALUES (:questionId);
+
+deleteQuestionId:
+DELETE FROM saved_questions WHERE question_id = :questionId;
