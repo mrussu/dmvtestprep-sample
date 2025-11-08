@@ -1,0 +1,58 @@
+selectAggregatedAnswers:
+SELECT
+    question_id,
+    MAX(end_time) AS max_end_time,
+    GROUP_CONCAT(is_correct, '') AS concat_is_correct
+FROM (
+    SELECT question_id, is_correct, end_time
+    FROM user_answers AS ua1
+    WHERE (
+        SELECT COUNT(*)
+        FROM user_answers AS ua2
+        WHERE ua2.question_id = ua1.question_id
+          AND ua2.end_time > ua1.end_time
+    ) < 3
+    ORDER BY question_id, end_time DESC
+)
+GROUP BY question_id;
+
+selectByTestId:
+SELECT * FROM user_answers WHERE test_id = :testId ORDER BY start_time ASC;
+
+selectByQuestionId:
+SELECT * FROM user_answers WHERE question_id = :questionId ORDER BY start_time ASC;
+
+insert:
+INSERT INTO user_answers (
+    test_id,
+    question_id,
+    start_time,
+    end_time,
+    total_time,
+    correct_answer,
+    selected_answer,
+    is_correct
+) VALUES (
+    :testId,
+    :questionId,
+    :startTime,
+    :endTime,
+    :totalTime,
+    :correctAnswer,
+    :selectedAnswer,
+    :isCorrect
+);
+
+performanceStatistics:
+SELECT
+    IFNULL((COUNT(CASE WHEN is_correct = 1 THEN 1 END) * 100.0 / COUNT(*)), -1) AS answer_accuracy,
+    IFNULL(CAST(AVG(total_time) AS INTEGER), 0) AS avg_answer_time,
+    IFNULL(SUM(total_time), 0) AS total_answer_time
+FROM user_answers;
+
+questionsStatistics:
+SELECT
+    COUNT(CASE WHEN is_correct = 1 THEN 1 END) AS correct_answers,
+    COUNT(CASE WHEN is_correct = 0 THEN 1 END) AS incorrect_answers,
+    COUNT(*) AS total_answered
+FROM user_answers;

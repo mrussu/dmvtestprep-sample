@@ -1,0 +1,38 @@
+selectAll:
+SELECT * FROM test_results ORDER BY start_time ASC;
+
+selectById:
+SELECT * FROM test_results WHERE id = :id;
+
+insertNewTest:
+INSERT INTO test_results (
+    mode_name,
+    language_code,
+    total_questions,
+    max_errors,
+    start_time
+) VALUES (
+    :modeName,
+    :languageCode,
+    :totalQuestions,
+    :maxErrors,
+    :startTime
+);
+
+updateTestById:
+UPDATE test_results SET
+    end_time = :endTime,
+    total_time = :endTime - start_time,
+    correct_answers = :correct_answers,
+    incorrect_answers = :incorrect_answers,
+    is_passed = :is_passed
+WHERE id = :id;
+
+testStatistics:
+SELECT
+    COUNT(*) AS total_attempts,
+    COUNT(CASE WHEN end_time IS NOT NULL THEN 1 END) AS completed,
+    COUNT(CASE WHEN is_passed = 1 THEN 1 END) AS passed,
+    COUNT(CASE WHEN is_passed = 0 AND end_time IS NOT NULL THEN 1 END) AS failed,
+    COUNT(CASE WHEN end_time IS NULL THEN 1 END) AS abandoned
+FROM test_results;

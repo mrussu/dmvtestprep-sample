@@ -1,0 +1,8 @@
+getLastInsertedRowId:
+SELECT last_insert_rowid() AS id;
+
+clearStatistics {
+    DELETE FROM test_results;
+    DELETE FROM user_answers;
+    DELETE FROM learned_questions;
+}
